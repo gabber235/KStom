@@ -13,7 +13,6 @@ import net.minestom.server.instance.block.Block
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.potion.PotionEffect
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
@@ -77,20 +76,23 @@ fun argumentFromClass(
 
     return when (clazz) {
         String::class -> if (isLast)
-            ArgumentType.StringArray(name).map { it.joinToString(" ") }
+            ArgumentType.StringArray(name).map { array -> array.joinToString(" ") }
         else
             ArgumentType.String(name)
+
         Int::class -> ArgumentType.Integer(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
                 ?.let { argument.defaultValue(it.number.toInt()) }
         }
+
         Double::class -> ArgumentType.Double(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max) }
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number) }
         }
+
         Color::class -> ArgumentType.Color(name)
         EntityType::class -> ArgumentType.EntityType(name)
         Material::class -> ArgumentMaterial(name)
@@ -98,16 +100,25 @@ fun argumentFromClass(
             annotations.filterIsInstance<DefaultBoolean>().firstOrNull()
                 ?.let { argument.defaultValue(it.boolean) }
         }
+
         Float::class -> ArgumentType.Float(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
                 ?.let { argument.defaultValue(it.number.toFloat()) }
         }
+
         ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
             annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
-                ?.let { argument.defaultValue(ItemStack.of(Material.fromNamespaceId(it.material) ?: error("Invalid Material ${it.material}!"))) }
+                ?.let {
+                    argument.defaultValue(
+                        ItemStack.of(
+                            Material.fromNamespaceId(it.material) ?: error("Invalid Material ${it.material}!")
+                        )
+                    )
+                }
         }
+
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
         Component::class -> ArgumentType.Component(name)
@@ -125,11 +136,13 @@ fun argumentFromClass(
                     )
                 }
         }
+
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name).also { argument ->
             annotations.filterIsInstance<DefaultFloatRange>().firstOrNull()
                 ?.let { argument.defaultValue(FloatRange(it.minimum, it.maximum)) }
         }
+
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
@@ -137,19 +150,21 @@ fun argumentFromClass(
         SoundEvent::class -> ArgumentSound(name)
         Byte::class -> ArgumentByte(name).also { argument ->
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
-                ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
+                ?.let {
+                    argument.defaultValue(
+                        it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)
+                    )
+                }
 
         }
+
         Block::class -> ArgumentType.BlockState(name).also { argument ->
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
                 ?.let { argument.defaultValue(Block.fromNamespaceId(it.block)) }
         }
+
         Point::class -> ArgumentType.RelativeVec3(name)
         CommandResult::class -> ArgumentType.Command(name)
-        PotionEffect::class -> ArgumentType.Potion(name).also { argument ->
-            annotations.filterIsInstance<DefaultPotionEffect>().firstOrNull()
-                ?.let { argument.defaultValue(PotionEffect.fromNamespaceId(it.potionEffect)) }
-        }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
 

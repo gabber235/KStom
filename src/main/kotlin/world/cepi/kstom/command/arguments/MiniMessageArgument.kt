@@ -25,8 +25,8 @@ object MiniMessageArgument {
         "font"
     )
 
-    val vararg = ArgumentType.StringArray("message").map {
-        it.joinToString(" ").asMini()
+    val vararg = ArgumentType.StringArray("message").map { array ->
+        array.joinToString(" ").asMini()
     }.let { argument ->
         argument.setSuggestionCallback { _, _, suggestion ->
             val input = suggestion.input
@@ -50,7 +50,8 @@ object MiniMessageArgument {
             if (when (input.indexOf("<pre>")) {
                     -1 -> Int.MAX_VALUE
                     else -> input.indexOf("<pre>")
-                } < startIndex) {
+                } < startIndex
+            ) {
                 suggestion.addEntry(SuggestionEntry(input, input.asMini()))
                 return@setSuggestionCallback
             }
@@ -75,7 +76,7 @@ object MiniMessageArgument {
         }
     }
 
-    fun single(id: String) = ArgumentType.String(id).map {
-        it.asMini()
+    fun single(id: String) = ArgumentType.String(id).map { string ->
+        string.asMini()
     }
 }

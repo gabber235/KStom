@@ -5,19 +5,16 @@ import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.chunk.ChunkUtils.isLoaded
-import net.minestom.server.utils.entity.EntityUtils
 import world.cepi.kstom.Manager
 import java.util.*
-import java.util.function.Consumer
 
 fun Instance.entitiesInRoughRange(position: Point, distance: Int): List<Entity> =
-        this.chunksInRange(Pos(position), distance)
-            .map { this.getChunk(it.first, it.second) }
-            .filter { it != null && it.isLoaded }
-            .map { this.getChunkEntities(it) }
-            .flatten()
-    
+    this.chunksInRange(Pos(position), distance)
+        .map { this.getChunk(it.first, it.second) }
+        .filter { it != null && it.isLoaded }
+        .map { this.getChunkEntities(it) }
+        .flatten()
+
 fun Entity.isVisibleTo(other: Entity): Boolean {
     return viewers.contains(other as? Player ?: return true)
 }
@@ -30,4 +27,4 @@ fun Entity.eyePosition(): Pos {
     return position.add(0.0, 1.53, 0.0)
 }
 
-fun UUID.asPlayer() = Manager.connection.getPlayer(this)
+fun UUID.asPlayer() = Manager.connection.getOnlinePlayerByUuid(this)

@@ -1,14 +1,13 @@
 package world.cepi.kstom.command.arguments
 
+import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.CommandContext
-import net.minestom.server.command.builder.NodeMaker
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.command.builder.parser.CommandParser
 import net.minestom.server.command.builder.parser.ValidSyntaxHolder
 import net.minestom.server.utils.StringUtils
 import java.util.*
-import kotlin.reflect.KClass
 
 class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
     Argument<Pair<String, CommandContext>>(id, true, false), List<Argument<*>> {
@@ -19,9 +18,10 @@ class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
         get() = group.size
 
     @Throws(ArgumentSyntaxException::class)
-    override fun parse(input: String): Pair<String, CommandContext> {
+    override fun parse(sender: CommandSender, input: String): Pair<String, CommandContext> {
         val validSyntaxes: List<ValidSyntaxHolder> = ArrayList()
         CommandParser.parse(
+            sender,
             null,
             group.toTypedArray(),
             input.split(StringUtils.SPACE.toRegex()).toTypedArray(),
@@ -38,11 +38,12 @@ class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
         return id to context
     }
 
-    override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
-        for (i in group.indices) {
-            val isLast = i == group.size - 1
-            group[i].processNodes(nodeMaker, executable && isLast)
-        }
+    override fun parser(): String {
+        return group.joinToString(" ") { it.parser() }
+    }
+
+    override fun nodeProperties(): ByteArray? {
+        return group.firstOrNull()?.nodeProperties()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -73,7 +74,7 @@ class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
     override fun containsAll(elements: Collection<Argument<*>>) = group.containsAll(elements)
     override fun isEmpty() = group.isEmpty()
     override fun iterator() = group.iterator()
-    override fun get(index: Int) = group.get(index)
+    override fun get(index: Int) = group[index]
     override fun indexOf(element: Argument<*>) = group.indexOf(element)
     override fun lastIndexOf(element: Argument<*>) = group.lastIndexOf(element)
     override fun listIterator(): ListIterator<Argument<*>> = group.listIterator()

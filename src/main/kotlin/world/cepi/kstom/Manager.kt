@@ -8,7 +8,6 @@ import net.minestom.server.adventure.bossbar.BossBarManager
 import net.minestom.server.command.CommandManager
 import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.exception.ExceptionManager
-import net.minestom.server.extensions.ExtensionManager
 import net.minestom.server.instance.InstanceManager
 import net.minestom.server.instance.block.BlockManager
 import net.minestom.server.listener.manager.PacketListenerManager
@@ -39,7 +38,6 @@ object Manager {
     val biome: BiomeManager get() = getBiomeManager()
     val advancement: AdvancementManager get() = getAdvancementManager()
     val bossBar: BossBarManager get() = getBossBarManager()
-    val extension: ExtensionManager get() = getExtensionManager()
     val globalEvent: GlobalEventHandler get() = getGlobalEventHandler()
 
 }

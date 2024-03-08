@@ -1,17 +1,17 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.9.23"
     // Kotlinx serialization for any data format
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("plugin.serialization") version "1.9.23"
     // Shade the plugin
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     // Allow publishing
     `maven-publish`
 
     // Apply the application plugin to add support for building a jar
     java
     // Dokka documentation w/ kotlin
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 
@@ -28,27 +28,27 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
 
     // Use the Kotlin reflect library.
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
 
     // Use the kotlin test library
     testImplementation("io.kotest:kotest-assertions-core:5.4.1")
     testImplementation("io.kotest:kotest-runner-junit5:5.4.1")
 
     // Add support for kotlinx courotines
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
     // Compile Minestom into project
     compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.5.0")
-    compileOnly("com.github.Minestom", "Minestom", "4eec3d10a3")
+    compileOnly("net.minestom:minestom-snapshots:7320437640")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     // Add MiniMessage
-    implementation("net.kyori:adventure-text-minimessage:4.10.1")
+    implementation("net.kyori:adventure-text-minimessage:4.16.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

@@ -2,15 +2,10 @@ package world.cepi.kstom.command.arguments
 
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
-import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import org.jetbrains.annotations.Contract
 import world.cepi.kstom.command.kommand.Kommand
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.KFunction1
 
 class Literal {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): ArgumentLiteral {
@@ -32,11 +27,11 @@ val literal get() = Literal()
 fun String.literal() = ArgumentLiteral(this)
 
 fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
-    this.setDefaultValue { value }
+    this.setDefaultValue { _ -> value }
 
 open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
-    object NONE: SuggestionIgnoreOption()
-    object IGNORE_CASE: SuggestionIgnoreOption({ it.lowercase() })
+    object NONE : SuggestionIgnoreOption()
+    object IGNORE_CASE : SuggestionIgnoreOption({ it.lowercase() })
 }
 
 /**
@@ -51,18 +46,17 @@ open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
 fun <T> Argument<T>.suggestComplex(
     suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,
     lambda: Kommand.SyntaxContext.() -> List<SuggestionEntry>
-): Argument<T>
-    = this.setSuggestionCallback { sender, context, suggestion ->
+): Argument<T> = this.setSuggestionCallback { sender, context, suggestion ->
 
-        lambda(Kommand.SyntaxContext(sender, context))
-            .filter {
-                suggestionIgnoreOption.modifier(it.entry)
-                    .startsWith(suggestionIgnoreOption.modifier(suggestion.input))
-            }
-            .sortedBy { it.entry }
-            .forEach { suggestion.addEntry(it) }
+    lambda(Kommand.SyntaxContext(sender, context))
+        .filter {
+            suggestionIgnoreOption.modifier(it.entry)
+                .startsWith(suggestionIgnoreOption.modifier(suggestion.input))
+        }
+        .sortedBy { it.entry }
+        .forEach { suggestion.addEntry(it) }
 
-    }
+}
 
 fun <T> Argument<T>.suggest(
     suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,
